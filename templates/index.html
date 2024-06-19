@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Recipe App</title>
+        <style>
+        body {
+            text-align: center;
+            margin: 40px;
+            font-family: Arial, Helvetica, sans-serif;
+            
+            text-align: center;
+    color:#fff;
+    padding-top:40px;
+    background-image:
+    radial-gradient(rgba(255, 255, 255, 0.125), rgba(255, 255, 255, 0)),
+    linear-gradient(to bottom, #000, #000 2px, #111 3px);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+            width: 200px;
+        }
+        .recipe-title {
+            font-size: 16px;
+            line-height: 1.2;
+            max-height: 3.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+        img {
+            display: block;
+            margin: 0 auto;
+            max-width: 200px;
+        }
+        /* a {
+            display: inline-block;
+            margin-top: 10px;
+            color: blue;
+            text-decoration: underline;
+        } */
+        a {
+           text-decoration: none;
+        }
+        .home-button {
+            display: inline-block;
+            margin-top: 10px;
+            margin-left: 10px;
+            color: blue;
+            /* text-decoration: underline; */
+        }
+        .recipe-details {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 2px solid #ccc;
+            padding: 20px;
+        }
+        .section-title {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .ingredient-list, .instrction-list {
+            text-align: left;
+        }
+.typewrite{
+    color: #fff;
+    font-size: 50px;
+}
+.select{
+                flex: 1;
+                color: #fff;
+                background: #403d84;
+                height: 50px;
+                padding: 0 20px;
+                outline: 0;
+                border: 0;
+                border-radius: 35px;
+                margin-top: 10px;
+                background-size: 15px;
+                background-position-y: 20px;
+                background-position-x: calc(100%-20px);
+            }
+          
+
+
+        
+    </style>
+</head>
+<body>
+
+    <h1>
+        <a href="" class="typewrite" data-period="2000" data-type='[ "Bored Of Eating The Same Food??", "Why Dont You Try Some New Dishes" ]'>
+          <span class="wrap"></span>
+        </a>
+      </h1>
+
+    <form method="POST" action="/">
+        <input class="select" type="text" name="search_query" placeholder="Search for recipes">
+        <input class="select" type="submit" value="Search">
+        <a href="/home" class="home-button">Home</a>
+    </form>
+  
+    <!-- Check of recipes are available-->
+    {% if recipes%}
+    <h2>Results for "{{ search_query }}"</h2>
+    <ul>
+        {% for recipe in recipes %}
+        <li>
+            <h3 class="recipe-title">{{ recipe.title }}</h3>
+            {% if recipe.image %}
+            <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+            {% endif %}
+            <a href="{{ url_for('view_recipe', recipe_id=recipe.id, search_query=search_query) }}">View</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <!-- If no recipes are found -->
+    {% else %}
+    <p>No recipes found.</p>
+    {% endif %}
+
+
+    <script>
+var TxtType = function(el, toRotate, period) {
+    this.toRotate = toRotate;
+    this.el = el;
+    this.loopNum = 0;
+    this.period = parseInt(period, 10) || 2000;
+    this.txt = '';
+    this.tick();
+    this.isDeleting = false;
+};
+
+TxtType.prototype.tick = function() {
+    var i = this.loopNum % this.toRotate.length;
+    var fullTxt = this.toRotate[i];
+
+    if (this.isDeleting) {
+    this.txt = fullTxt.substring(0, this.txt.length - 1);
+    } else {
+    this.txt = fullTxt.substring(0, this.txt.length + 1);
+    }
+
+    this.el.innerHTML = '<span class="wrap">'+this.txt+'</span>';
+
+    var that = this;
+    var delta = 200 - Math.random() * 100;
+
+    if (this.isDeleting) { delta /= 2; }
+
+    if (!this.isDeleting && this.txt === fullTxt) {
+    delta = this.period;
+    this.isDeleting = true;
+    } else if (this.isDeleting && this.txt === '') {
+    this.isDeleting = false;
+    this.loopNum++;
+    delta = 500;
+    }
+
+    setTimeout(function() {
+    that.tick();
+    }, delta);
+};
+
+window.onload = function() {
+    var elements = document.getElementsByClassName('typewrite');
+    for (var i=0; i<elements.length; i++) {
+        var toRotate = elements[i].getAttribute('data-type');
+        var period = elements[i].getAttribute('data-period');
+        if (toRotate) {
+          new TxtType(elements[i], JSON.parse(toRotate), period);
+        }
+    }
+    // INJECT CSS
+    var css = document.createElement("style");
+    css.type = "text/css";
+    css.innerHTML = ".typewrite > .wrap { border-right: 0.08em solid #fff}";
+    document.body.appendChild(css);
+};
+    </script>
+</body>
+</html>
